@@ -8,15 +8,15 @@ class Map{
     constructor(){
         this.map_grid=[
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
+            [1,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
+            [1,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
+            [1,0,0,1,0,0,1,1,1,1,0,0,0,0,1],
+            [1,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,1,1,0,0,1],
             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
     ];
@@ -38,9 +38,79 @@ class Map{
     }
 }
 
+class Player
+{
+    constructor()
+    {
+    this.x=WIDTH/2;
+    this.y=HEIGHT/2;
+    this.radius=3;
+    this.turnDir=0;
+    this.walkDir=0;
+    this.rotAngle=Math.PI/2;
+    this.moveSpeed=3.0;
+    this.rotSpeed=3*(Math.PI/100);
+    }
+    render()
+    {   
+        fill("red");
+        circle(this.x,this.y,this.radius);
+        stroke("red");
+        line(this.x,this.y,this.x+Math.cos(this.rotAngle)*40,this.y+Math.sin(this.rotAngle)*40);
+    }
+    update()
+    {
+        //manage player inputs
+        this.rotAngle+=this.turnDir*this.rotSpeed;
+        var step=this.walkDir*this.moveSpeed;
+        this.x=this.x+Math.cos(this.rotAngle)*step;
+        this.y=this.y+Math.sin(this.rotAngle)*step;
+    }
+}
+
 
 var grid=new Map();
+var player=new Player();
 
+function keyPressed()
+{
+    if(keyCode==UP_ARROW)
+    {
+        player.walkDir=1;
+    }
+    else if(keyCode==DOWN_ARROW)
+    {
+        player.walkDir=-1;
+    }
+    else if(keyCode==RIGHT_ARROW)
+    {
+        player.turnDir=1;
+    }
+    else if(keyCode==LEFT_ARROW)
+    {
+        player.turnDir=-1;
+    }
+}
+
+function keyReleased()
+{
+    if(keyCode==UP_ARROW)
+    {
+        player.walkDir=0;
+    }
+    else if(keyCode==DOWN_ARROW)
+    {
+        player.walkDir=0;
+    }
+    else if(keyCode==RIGHT_ARROW)
+    {
+        player.turnDir=0;
+    }
+    else if(keyCode==LEFT_ARROW)
+    {
+        player.turnDir=0;
+    }
+}
 function setup()
 {
     createCanvas(WIDTH,HEIGHT);
@@ -48,11 +118,12 @@ function setup()
 
 function update()
 {
-    
+    player.update();
 }
 
 function draw()
 {
     update();
     grid.render();
+    player.render();
 }
