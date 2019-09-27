@@ -36,6 +36,20 @@ class Map{
             }
         }
     }
+    WallPresent(UpdatedX,UpdatedY)
+    {
+        var MapX=Math.floor(UpdatedX/TILE_SIZE);
+        var MapY=Math.floor(UpdatedY/TILE_SIZE);
+        if(this.map_grid[MapY][MapX])
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 }
 
 class Player
@@ -63,8 +77,14 @@ class Player
         //manage player inputs
         this.rotAngle+=this.turnDir*this.rotSpeed;
         var step=this.walkDir*this.moveSpeed;
-        this.x=this.x+Math.cos(this.rotAngle)*step;
-        this.y=this.y+Math.sin(this.rotAngle)*step;
+        var UpdatedX=this.x+Math.cos(this.rotAngle)*step;
+        var UpdatedY=this.y+Math.sin(this.rotAngle)*step;
+        //check for walls 
+        if(grid.WallPresent(UpdatedX,UpdatedY)==false)
+        {
+            this.x=UpdatedX;
+            this.y=UpdatedY;
+        }
     }
 }
 
