@@ -3,6 +3,9 @@ const MAP_ROWS=12;
 const MAP_COLUMNS=15;
 const WIDTH= MAP_COLUMNS*TILE_SIZE;
 const HEIGHT= MAP_ROWS*TILE_SIZE;
+const FOV=60*(Math.PI/180);
+const WALL_WIDTH=4;
+const RAY_NUM=WIDTH/WALL_WIDTH;
 
 class Map{
     constructor(){
@@ -49,8 +52,8 @@ class Map{
             return false;
         }
     }
-
 }
+
 
 class Player
 {
@@ -88,9 +91,24 @@ class Player
     }
 }
 
+class Ray
+{
+    constructor(angle)
+    {
+        this.angle=angle;
+    }
+    render()
+    {
+        stroke("red");
+        line(player.x,player.y,player.x+Math.cos(this.angle)*40,player.y+Math.sin(this.angle)*40);
+    }
+}
+
 
 var grid=new Map();
 var player=new Player();
+var rays=[];
+
 
 function keyPressed()
 {
@@ -136,9 +154,23 @@ function setup()
     createCanvas(WIDTH,HEIGHT);
 }
 
+function castAllRays()
+{
+    var col=0;
+    var start=player.rotAngle-(FOV/2);
+    rays=[];
+    for(var i=0;i<RAY_NUM;i++)
+    {
+        var ray=new Ray(start);
+        rays.push(ray);
+        start+=FOV/RAY_NUM;
+        ++col;
+    }
+}
 function update()
 {
     player.update();
+    castAllRays();
 }
 
 function draw()
@@ -146,4 +178,8 @@ function draw()
     update();
     grid.render();
     player.render();
+    for(ray of rays)
+    {
+        ray.render();
+    }
 }
