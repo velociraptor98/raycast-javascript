@@ -47,41 +47,40 @@ class Map {
 }
 
 
-class Player
-{
-    constructor()
-    {
-    this.x=WIDTH/2;
-    this.y=HEIGHT/2;
-    this.radius=3;
-    this.turnDir=0;
-    this.walkDir=0;
-    this.rotAngle=Math.PI/2;
-    this.moveSpeed=3.0;
-    this.rotSpeed=3*(Math.PI/100);
+class Player {
+    constructor() {
+        this.x = WINDOW_WIDTH / 2;
+        this.y = WINDOW_HEIGHT / 2;
+        this.radius = 3;
+        this.turnDirection = 0; // -1 if left, +1 if right
+        this.walkDirection = 0; // -1 if back, +1 if front
+        this.rotationAngle = Math.PI / 2;
+        this.moveSpeed = 2.0;
+        this.rotationSpeed = 2 * (Math.PI / 180);
     }
-    render()
-    {   
-        fill("red");
-        circle(this.x,this.y,this.radius);
-        stroke("red");
-        line(this.x,this.y,this.x+Math.cos(this.rotAngle)*40,this.y+Math.sin(this.rotAngle)*40);
-    }
-    update()
-    {
-        //manage player inputs
-        this.rotAngle+=this.turnDir*this.rotSpeed;
-        var step=this.walkDir*this.moveSpeed;
-        var UpdatedX=this.x+Math.cos(this.rotAngle)*step;
-        var UpdatedY=this.y+Math.sin(this.rotAngle)*step;
-        //check for walls 
-        if(grid.WallPresent(UpdatedX,UpdatedY)==false)
-        {
-            this.x=UpdatedX;
-            this.y=UpdatedY;
+    update() {
+        this.rotationAngle += this.turnDirection * this.rotationSpeed;
+
+        var moveStep = this.walkDirection * this.moveSpeed;
+
+        var newPlayerX = this.x + Math.cos(this.rotationAngle) * moveStep;
+        var newPlayerY = this.y + Math.sin(this.rotationAngle) * moveStep;
+
+        if (!grid.hasWallAt(newPlayerX, newPlayerY)) {
+            this.x = newPlayerX;
+            this.y = newPlayerY;
         }
     }
+    render() {
+        noStroke();
+        fill("yellow");
+        circle(SCALE_FACTOR*this.x, SCALE_FACTOR*this.y, SCALE_FACTOR*this.radius);
+        stroke("blue");
+        line(
+            SCALE_FACTOR*this.x,SCALE_FACTOR*this.y,SCALE_FACTOR*(this.x + Math.cos(this.rotationAngle) * 30),SCALE_FACTOR*(this.y + Math.sin(this.rotationAngle) * 30));
+    }
 }
+
 
 class Ray
 {
