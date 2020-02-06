@@ -186,81 +186,98 @@ class Ray {
 }
 
 
-var grid=new Map();
-var player=new Player();
-var rays=[];
+var grid = new Map();
+var player = new Player();
+var rays = [];
 
-
-function keyPressed()
-{
-    if(keyCode==UP_ARROW)
-    {
-        player.walkDir=1;
+function normalizeAngle(angle) {
+    angle = angle % (2 * Math.PI);
+    if (angle < 0) {
+        angle = (2 * Math.PI) + angle;
     }
-    else if(keyCode==DOWN_ARROW)
-    {
-        player.walkDir=-1;
-    }
-    else if(keyCode==RIGHT_ARROW)
-    {
-        player.turnDir=1;
-    }
-    else if(keyCode==LEFT_ARROW)
-    {
-        player.turnDir=-1;
-    }
+    return angle;
 }
 
-function keyReleased()
-{
-    if(keyCode==UP_ARROW)
-    {
-        player.walkDir=0;
-    }
-    else if(keyCode==DOWN_ARROW)
-    {
-        player.walkDir=0;
-    }
-    else if(keyCode==RIGHT_ARROW)
-    {
-        player.turnDir=0;
-    }
-    else if(keyCode==LEFT_ARROW)
-    {
-        player.turnDir=0;
+function keyPressed() {
+    if (keyCode == UP_ARROW) {
+        player.walkDirection = +1;
+    } else if (keyCode == DOWN_ARROW) {
+        player.walkDirection = -1;
+    } else if (keyCode == RIGHT_ARROW) {
+        player.turnDirection = +1;
+    } else if (keyCode == LEFT_ARROW) {
+        player.turnDirection = -1;
     }
 }
-function setup()
-{
-    createCanvas(WIDTH,HEIGHT);
+function keyReleased() {
+    if (keyCode == UP_ARROW) {
+        player.walkDirection = 0;
+    } else if (keyCode == DOWN_ARROW) {
+        player.walkDirection = 0;
+    } else if (keyCode == RIGHT_ARROW) {
+        player.turnDirection = 0;
+    } else if (keyCode == LEFT_ARROW) {
+        player.turnDirection = 0;
+    }
 }
+function castAllRays() {
+    var columnId = 0;
 
-function castAllRays()
-{
-    var col=0;
-    var start=player.rotAngle-(FOV/2);
-    rays=[];
-    for(var i=0;i<RAY_NUM;i++)
-    {
-        var ray=new Ray(start);
+    // start first ray subtracting half of the FOV
+    var rayAngle = player.rotationAngle - (FOV_ANGLE / 2);
+
+    rays = [];
+
+    // loop all columns casting the rays
+    for (var i = 0; i < NUM_RAYS; i++) {
+        var ray = new Ray(rayAngle);
+        ray.cast(columnId);
         rays.push(ray);
-        start+=FOV/RAY_NUM;
-        ++col;
+        rayAngle += FOV_ANGLE / NUM_RAYS;
+        columnId++;
     }
 }
-function update()
-{
+function normalizeAngle(angle) {
+    angle = angle % (2 * Math.PI);
+    if (angle < 0) {
+        angle = (2 * Math.PI) + angle;
+    }
+    return angle;
+}
+function distanceBetweenPoints(x1, y1, x2, y2) {
+    return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+}
+function setup() {
+    createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
+}
+
+function update() {
     player.update();
     castAllRays();
 }
-
-function draw()
+function renderProjected()
 {
-    update();
-    grid.render();
-    player.render();
-    for(ray of rays)
+    for(var i=0;i<NUM_RAYS;++i)
     {
+        var ray=rays[i];
+        // correct the distance in order to rectify the fish eye effect
+        var rayDist= ray.distance * Math.cos(ray.rayAngle-player.rotationAngle);
+        var distanceBetweenProjectedPlanes = (WINDOW_WIDTH/2)/Math.tan(FOV_ANGLE/2);
+        //Control how tall the wall will be
+        var wallStripHeight = (TILE_SIZE/rayDist) * distanceBetweenProjectedPlanes;
+        var transparency = 150 / rayDist;
+        fill("rgba(0,255,255,"+transparency+")");
+        noStroke();
+        rect(i * WALL_STRIP_WIDTH,(WINDOW_HEIGHT/2)-(wallStripHeight/2),WALL_STRIP_WIDTH,wallStripHeight);
+    }
+}
+function draw() {
+    clear("#2a2a2a");
+    update();
+    renderProjected()
+    grid.render();
+    for (ray of rays) {
         ray.render();
     }
+    player.render();
 }
