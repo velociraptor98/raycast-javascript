@@ -1,55 +1,47 @@
-const TILE_SIZE=32;
-const MAP_ROWS=12;
-const MAP_COLUMNS=15;
-const WIDTH= MAP_COLUMNS*TILE_SIZE;
-const HEIGHT= MAP_ROWS*TILE_SIZE;
-const FOV=60*(Math.PI/180);
-const WALL_WIDTH=4;
-const RAY_NUM=WIDTH/WALL_WIDTH;
+const TILE_SIZE = 64;
+const MAP_NUM_ROWS = 11;
+const MAP_NUM_COLS = 15;
+const WINDOW_WIDTH = MAP_NUM_COLS * TILE_SIZE;
+const WINDOW_HEIGHT = MAP_NUM_ROWS * TILE_SIZE;
+const FOV_ANGLE = 60 * (Math.PI / 180);
+const WALL_STRIP_WIDTH = 1; 
+const NUM_RAYS = WINDOW_WIDTH / WALL_STRIP_WIDTH;
+const SCALE_FACTOR = 0.2;
 
-class Map{
-    constructor(){
-        this.map_grid=[
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-            [1,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
-            [1,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
-            [1,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
-            [1,0,0,1,0,0,1,1,1,1,0,0,0,0,1],
-            [1,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,1,1,1,1],
-            [1,0,0,0,0,0,0,0,0,1,1,1,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-    ];
+class Map {
+    constructor() {
+        this.grid = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
     }
-    render()
-    {
-        for(var i=0;i<MAP_ROWS;i++)
-        {
-            for(var j=0;j<MAP_COLUMNS;j++)
-            {
-                var X=j*TILE_SIZE;
-                var Y=i*TILE_SIZE;
-                var tile_color=this.map_grid[i][j]==1?"#222":"#fff";
-                stroke("#222");
-                fill(tile_color);
-                rect(X,Y,TILE_SIZE,TILE_SIZE);
-            }
-        }
-    }
-    WallPresent(UpdatedX,UpdatedY)
-    {
-        var MapX=Math.floor(UpdatedX/TILE_SIZE);
-        var MapY=Math.floor(UpdatedY/TILE_SIZE);
-        if(this.map_grid[MapY][MapX])
-        {
+    hasWallAt(x, y) {
+        if (x < 0 || x > WINDOW_WIDTH || y < 0 || y > WINDOW_HEIGHT) {
             return true;
         }
-        else
-        {
-            return false;
+        var mapGridIndexX = Math.floor(x / TILE_SIZE);
+        var mapGridIndexY = Math.floor(y / TILE_SIZE);
+        return this.grid[mapGridIndexY][mapGridIndexX] != 0;
+    }
+    render() {
+        for (var i = 0; i < MAP_NUM_ROWS; i++) {
+            for (var j = 0; j < MAP_NUM_COLS; j++) {
+                var tileX = j * TILE_SIZE;
+                var tileY = i * TILE_SIZE;
+                var tileColor = this.grid[i][j] == 1 ? "#222" : "#fff";
+                stroke("#222");
+                fill(tileColor);
+                rect(SCALE_FACTOR*tileX, SCALE_FACTOR*tileY, SCALE_FACTOR*TILE_SIZE, SCALE_FACTOR*TILE_SIZE);
+            }
         }
     }
 }
