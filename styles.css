@@ -5,8 +5,14 @@ html,body{
 }
 canvas{
     display: block;
-    margin:0 auto;
+    margin:80px auto;
     border-style:solid;
     border-width:8 px;
     border-color: #fff;
+}
+h1{
+    font-family: "Segoe UI";
+    text-align: center;
+    font-weight: bolder;
+    color:#ffffff;
 }
