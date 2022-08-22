@@ -1,5 +1,5 @@
 # Raycaster in JavaScript
 
-The following repositoiry contains code for a raytracer written in javascript.
+A straighforward raycaster implemented in javascript for a wolfenstein style map.
 
 ![Screenshot](/screen.jpg)
